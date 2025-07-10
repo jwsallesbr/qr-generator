@@ -1,53 +1,81 @@
 # Gerador de QR Code Gratuito
 
-Uma aplicação web simples e gratuita para gerar QR codes a partir de URLs.
+Uma aplicação web e API REST para gerar QR codes customizáveis a partir de URLs, com gerenciamento de usuários. Backend em Flask, frontend em HTML/CSS.
 
-## Características
+## Funcionalidades
 
-- ✅ **Totalmente gratuito** - Sem custos ou limitações
-- ✅ **Sem limite de uso** - Gere quantos QR codes precisar
-- ✅ **Download em alta qualidade** - Imagens PNG de alta resolução
-- ✅ **Interface responsiva** - Funciona em desktop e mobile
-- ✅ **Sem registro necessário** - Use imediatamente
-- ✅ **Código aberto** - Totalmente transparente
+- ✅ **Geração de QR Codes customizáveis** (moldura, texto, cantos arredondados)
+- ✅ **Download em PNG de alta qualidade**
+- ✅ **Interface web responsiva**
+- ✅ **API REST para integração**
+- ✅ **Gerenciamento de usuários (CRUD via API)**
+- ✅ **Banco de dados SQLite integrado**
+- ✅ **Código aberto e gratuito**
 
 ## Como usar
 
 ### Interface Web
 
-1. Acesse a aplicação no navegador
-2. Digite a URL que deseja converter em QR code
-3. Clique em "Gerar QR Code"
-4. Visualize o QR code gerado
-5. Clique em "Baixar PNG" para salvar a imagem
+1. Acesse a aplicação no navegador (`http://localhost:5000`)
+2. Digite a URL desejada
+3. Escolha opções de moldura, texto e arredondamento
+4. Clique em "Gerar QR Code"
+5. Visualize e baixe o QR code gerado
 
-### Script Python (linha de comando)
+### API REST
 
-```python
-from generate_qr import generate_qr_code
+#### Gerar QR Code (base64)
+`POST /api/qr/generate`
 
-# Gerar QR code para uma URL
-generate_qr_code("https://www.exemplo.com", "meu_qr.png")
+**Request:**
+```json
+{
+  "url": "https://exemplo.com",
+  "frame": "border", // opções: none, border, text
+  "frame_text": "Texto opcional",
+  "round_inner": "yes", // ou "no"
+  "round_outer": "yes", // ou "no"
+  "frame_text_size": 32
+}
 ```
+**Response:**
+```json
+{
+  "success": true,
+  "qr_code": "data:image/png;base64,...",
+  "url": "https://exemplo.com"
+}
+```
+
+#### Download do QR Code (PNG)
+`POST /api/qr/download`
+
+**Request:** igual ao endpoint acima, com campo opcional `file_name`.
+**Response:** arquivo PNG para download.
+
+#### Usuários (CRUD)
+
+- `GET /api/users` — Lista todos os usuários
+- `POST /api/users` — Cria usuário
+  - Body: `{ "username": "nome", "email": "email@exemplo.com" }`
+- `GET /api/users/<id>` — Detalha usuário
+- `PUT /api/users/<id>` — Atualiza usuário
+- `DELETE /api/users/<id>` — Remove usuário
 
 ## Instalação e Execução
 
 ### Pré-requisitos
-
 - Python 3.7+
 - pip
 
 ### Passos
-
-1. Clone ou baixe os arquivos
+1. Clone o repositório
 2. Instale as dependências:
    ```bash
    pip install -r requirements.txt
    ```
 3. Execute a aplicação:
    ```bash
-   cd qr_generator
-   source venv/bin/activate  # Linux/Mac
    python src/main.py
    ```
 4. Acesse `http://localhost:5000` no navegador
@@ -55,56 +83,36 @@ generate_qr_code("https://www.exemplo.com", "meu_qr.png")
 ## Estrutura do Projeto
 
 ```
-qr_generator/
+qr-generator/
 ├── src/
-│   ├── main.py              # Aplicação Flask principal
+│   ├── main.py              # App Flask principal
+│   ├── models/
+│   │   └── user.py          # Modelo User (SQLAlchemy)
 │   ├── routes/
-│   │   └── qr_code.py       # Rotas da API
+│   │   ├── qr_code.py       # Rotas de QR Code (API)
+│   │   └── user.py          # Rotas de Usuário (API)
+│   ├── database/
+│   │   └── app.db           # Banco SQLite
 │   └── static/
-│       └── index.html       # Interface web
+│       ├── index.html       # Interface web
+│       └── favicon.ico
 ├── requirements.txt         # Dependências Python
-└── README.md               # Esta documentação
+└── README.md                # Documentação
 ```
 
-## API Endpoints
+## Modelo de Dados
 
-### POST /api/qr/generate
-Gera um QR code e retorna como base64.
-
-**Request:**
-```json
-{
-  "url": "https://exemplo.com"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-  "url": "https://exemplo.com"
-}
-```
-
-### POST /api/qr/download
-Gera um QR code e retorna como arquivo PNG para download.
-
-**Request:**
-```json
-{
-  "url": "https://exemplo.com"
-}
-```
-
-**Response:** Arquivo PNG
+**User**
+- `id`: int, chave primária
+- `username`: string, único, obrigatório
+- `email`: string, único, obrigatório
 
 ## Tecnologias Utilizadas
-
-- **Backend:** Python, Flask
-- **Frontend:** HTML, CSS, JavaScript
-- **QR Code:** Biblioteca `qrcode` do Python
+- **Backend:** Python, Flask, Flask-SQLAlchemy
+- **Frontend:** HTML, CSS
+- **QR Code:** qrcode (Python)
 - **Imagens:** Pillow (PIL)
+- **Banco:** SQLite
 
 ## Licença
 
@@ -112,13 +120,12 @@ Este projeto é de código aberto e gratuito para uso pessoal e comercial.
 
 ## Suporte
 
-Para dúvidas ou problemas, verifique se:
-1. Todas as dependências estão instaladas
-2. A URL fornecida é válida
-3. O servidor Flask está rodando na porta 5000
+Para dúvidas ou problemas:
+1. Verifique se todas as dependências estão instaladas
+2. Certifique-se de que a URL fornecida é válida
+3. O servidor Flask deve estar rodando na porta 5000
 
 ## Exemplos de Uso
-
 - Compartilhar links de redes sociais
 - Criar QR codes para sites pessoais
 - Gerar códigos para campanhas de marketing
