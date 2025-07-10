@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de QR Code Gratuito</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="url"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .qr-result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .qr-code-img {
+            max-width: 250px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .error {
+            color: #e74c3c;
+            background: #ffeaea;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success {
+            color: #27ae60;
+            background: #eafaf1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .features {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .feature::before {
+            content: "✓";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 QR Code</h1>
+        <p class="subtitle">Gere QR codes gratuitamente para qualquer URL</p>
+        
+        <form id="qrForm">
+            <div class="input-group">
+                <label for="url">Digite a URL:</label>
+                <input type="url" id="url" placeholder="https://exemplo.com" required>
+            </div>
+            <div class="input-group">
+                <label for="frame">Tipo de moldura:</label>
+                <select id="frame" name="frame">
+                    <option value="none">Sem moldura</option>
+                    <option value="border">Borda preta</option>
+                    <option value="text">Texto abaixo</option>
+                </select>
+            </div>
+            <div class="input-group" id="frameTextGroup" style="display:none;">
+                <label for="frameText">Texto da moldura:</label>
+                <input type="text" id="frameText" name="frameText" placeholder="Ex: Google Play Store">
+            </div>
+            <div class="input-group" id="frameTextSizeGroup" style="display:none;">
+                <label for="frameTextSize">Tamanho do texto da moldura (px):</label>
+                <input type="number" id="frameTextSize" name="frameTextSize" min="10" max="100" value="32">
+            </div>
+            <div class="input-group">
+                <label for="fileName">Nome do arquivo:</label>
+                <input type="text" id="fileName" name="fileName" placeholder="Ex: meu_qrcode">
+            </div>
+            <div class="input-group">
+                <label for="roundInner">Arredondar bordas internas:</label>
+                <select id="roundInner" name="roundInner">
+                    <option value="no">Não</option>
+                    <option value="yes">Sim</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="roundOuter">Arredondar borda externa:</label>
+                <select id="roundOuter" name="roundOuter">
+                    <option value="no">Não</option>
+                    <option value="yes">Sim</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" id="generateBtn">
+                Gerar QR Code
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Gerando QR Code...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="qr-result" id="qrResult">
+            <div class="success">QR Code gerado com sucesso!</div>
+            <img id="qrImage" class="qr-code-img" alt="QR Code">
+            <div>
+                <button class="btn" id="downloadBtn">📥 Baixar PNG</button>
+            </div>
+        </div>
+
+        <div class="features">
+            <h3 style="margin-bottom: 15px; color: #333;">Características:</h3>
+            <div class="feature">Totalmente gratuito</div>
+            <div class="feature">Sem limite de uso</div>
+            <div class="feature">Download em alta qualidade</div>
+            <div class="feature">Interface responsiva</div>
+            <div class="feature">Sem registro necessário</div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('qrForm');
+        const urlInput = document.getElementById('url');
+        const frameSelect = document.getElementById('frame');
+        const frameTextGroup = document.getElementById('frameTextGroup');
+        const frameTextInput = document.getElementById('frameText');
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const qrResult = document.getElementById('qrResult');
+        const qrImage = document.getElementById('qrImage');
+
+        let currentUrl = '';
+
+        frameSelect.addEventListener('change', () => {
+            if (frameSelect.value === 'text') {
+                frameTextGroup.style.display = 'block';
+                frameTextSizeGroup.style.display = 'block';
+            } else {
+                frameTextGroup.style.display = 'none';
+                frameTextSizeGroup.style.display = 'none';
+                frameTextInput.value = '';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = urlInput.value.trim();
+            const frame = frameSelect.value;
+            const frameText = frameTextInput.value.trim();
+            const fileName = document.getElementById('fileName').value.trim();
+            const roundInner = document.getElementById('roundInner').value;
+            const roundOuter = document.getElementById('roundOuter').value;
+            const frameTextSize = document.getElementById('frameTextSize').value;
+            if (!url) return;
+            // Reset UI
+            error.style.display = 'none';
+            qrResult.style.display = 'none';
+            loading.style.display = 'block';
+            generateBtn.disabled = true;
+            try {
+                const response = await fetch('/api/qr/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url, frame: frame, frame_text: frameText, file_name: fileName, round_inner: roundInner, round_outer: roundOuter, frame_text_size: frameTextSize })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    qrImage.src = data.qr_code;
+                    currentUrl = url;
+                    qrResult.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Erro ao gerar QR Code');
+                }
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        });
+        downloadBtn.addEventListener('click', async () => {
+            if (!currentUrl) return;
+            const frame = frameSelect.value;
+            const frameText = frameTextInput.value.trim();
+            const fileName = document.getElementById('fileName').value.trim();
+            const roundInner = document.getElementById('roundInner').value;
+            const roundOuter = document.getElementById('roundOuter').value;
+            const frameTextSize = document.getElementById('frameTextSize').value;
+            try {
+                const response = await fetch('/api/qr/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: currentUrl, frame: frame, frame_text: frameText, file_name: fileName, round_inner: roundInner, round_outer: roundOuter, frame_text_size: frameTextSize })
+                });
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = (fileName ? fileName : 'qr_code') + '.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    throw new Error('Erro ao baixar QR Code');
+                }
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = 'block';
+            }
+        });
+
+        // Auto-focus no input
+        urlInput.focus();
+    </script>
+</body>
+</html>
+
