@@ -58,11 +58,13 @@ def generate_qr():
 def add_frame_and_text(img, frame_type, frame_text=None, round_inner='no', round_outer='no', frame_text_size=None):
     from PIL import ImageDraw, ImageFont
     border_size = 20  # moldura preta
-    inner_border = 12  # borda interna branca
+    inner_border = 8  # borda interna branca
     inner_radius = 30  # raio do arredondamento dos cantos internos (brancos)
     # Tamanho do texto
     try:
         font_size = int(frame_text_size) if frame_text_size else 32
+        if font_size > 54:
+            font_size = 54
     except:
         font_size = 32
     # Tamanho da imagem final (moldura preta)

@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de QR Code Gratuito</title>
     <style>
+        :root {
+            --color-bg-light: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --color-bg-dark: linear-gradient(135deg, #232526 0%, #414345 100%);
+            --container-bg-light: white;
+            --container-bg-dark: #23272f;
+            --text-main-light: #333;
+            --text-main-dark: #f3f3f3;
+            --text-sub-light: #666;
+            --text-sub-dark: #b0b0b0;
+            --input-bg-light: #fff;
+            --input-bg-dark: #23272f;
+            --input-border-light: #e1e5e9;
+            --input-border-dark: #444a57;
+            --btn-bg-light: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --btn-bg-dark: linear-gradient(135deg, #232526 0%, #414345 100%);
+            --btn-text-light: #fff;
+            --btn-text-dark: #fff;
+            --qr-bg-light: #f8f9fa;
+            --qr-bg-dark: #23272f;
+            --error-bg-light: #ffeaea;
+            --error-bg-dark: #4b2323;
+            --error-text-light: #e74c3c;
+            --error-text-dark: #ffb3b3;
+            --success-bg-light: #eafaf1;
+            --success-bg-dark: #1e3d2f;
+            --success-text-light: #27ae60;
+            --success-text-dark: #7fffaf;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -13,67 +41,87 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--color-bg-light);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            transition: background 0.3s;
         }
-
+        .dark-mode body {
+            background: var(--color-bg-dark);
+        }
         .container {
-            background: white;
+            background: var(--container-bg-light);
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             padding: 40px;
             max-width: 500px;
             width: 100%;
             text-align: center;
+            transition: background 0.3s;
         }
-
+        .dark-mode .container {
+            background: var(--container-bg-dark);
+        }
         h1 {
-            color: #333;
+            color: var(--text-main-light);
             margin-bottom: 10px;
             font-size: 2.5em;
             font-weight: 700;
         }
-
+        .dark-mode h1 {
+            color: var(--text-main-dark);
+        }
         .subtitle {
-            color: #666;
+            color: var(--text-sub-light);
             margin-bottom: 30px;
             font-size: 1.1em;
         }
-
+        .dark-mode .subtitle {
+            color: var(--text-sub-dark);
+        }
         .input-group {
             margin-bottom: 25px;
             text-align: left;
         }
-
         label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-main-light);
             font-weight: 600;
         }
-
-        input[type="url"] {
+        .dark-mode label {
+            color: var(--text-main-dark);
+        }
+        input[type="url"], input[type="text"], input[type="number"] {
             width: 100%;
             padding: 15px;
-            border: 2px solid #e1e5e9;
+            border: 2px solid var(--input-border-light);
             border-radius: 10px;
             font-size: 16px;
+            background: var(--input-bg-light);
+            color: var(--text-main-light);
             transition: all 0.3s ease;
             outline: none;
         }
-
-        input[type="url"]:focus {
+        .dark-mode input[type="url"], .dark-mode input[type="text"], .dark-mode input[type="number"] {
+            border: 2px solid var(--input-border-dark);
+            background: var(--input-bg-dark);
+            color: var(--text-main-dark);
+        }
+        input[type="url"]:focus, input[type="text"]:focus, input[type="number"]:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
+        .dark-mode input[type="url"]:focus, .dark-mode input[type="text"]:focus, .dark-mode input[type="number"]:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--btn-bg-light);
+            color: var(--btn-text-light);
             border: none;
             padding: 15px 30px;
             border-radius: 10px;
@@ -84,55 +132,62 @@
             margin: 10px;
             min-width: 120px;
         }
-
+        .dark-mode .btn {
+            background: var(--btn-bg-dark);
+            color: var(--btn-text-dark);
+        }
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
-
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-
         .qr-result {
             margin-top: 30px;
             padding: 20px;
-            background: #f8f9fa;
+            background: var(--qr-bg-light);
             border-radius: 15px;
             display: none;
         }
-
+        .dark-mode .qr-result {
+            background: var(--qr-bg-dark);
+        }
         .qr-code-img {
             max-width: 250px;
             margin: 20px auto;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .error {
-            color: #e74c3c;
-            background: #ffeaea;
+            color: var(--error-text-light);
+            background: var(--error-bg-light);
             padding: 15px;
             border-radius: 10px;
             margin-top: 20px;
             display: none;
         }
-
+        .dark-mode .error {
+            color: var(--error-text-dark);
+            background: var(--error-bg-dark);
+        }
         .success {
-            color: #27ae60;
-            background: #eafaf1;
+            color: var(--success-text-light);
+            background: var(--success-bg-light);
             padding: 15px;
             border-radius: 10px;
             margin-top: 20px;
         }
-
+        .dark-mode .success {
+            color: var(--success-text-dark);
+            background: var(--success-bg-dark);
+        }
         .loading {
             display: none;
             margin: 20px 0;
         }
-
         .spinner {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #667eea;
@@ -142,48 +197,60 @@
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
         .features {
             margin-top: 30px;
             text-align: left;
         }
-
         .feature {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
-            color: #666;
+            color: var(--text-sub-light);
         }
-
+        .dark-mode .feature {
+            color: var(--text-sub-dark);
+        }
         .feature::before {
             content: "✓";
             color: #27ae60;
             font-weight: bold;
             margin-right: 10px;
         }
-
         @media (max-width: 600px) {
             .container {
                 padding: 30px 20px;
             }
-            
             h1 {
                 font-size: 2em;
             }
-            
             .btn {
                 width: 100%;
                 margin: 5px 0;
             }
         }
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #764ba2;
+            z-index: 10;
+            transition: color 0.3s;
+        }
+        .dark-mode .theme-toggle {
+            color: #fff;
+        }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" id="themeToggle" title="Alternar modo claro/escuro">🌙</button>
     <div class="container">
         <h1>🔗 QR Code</h1>
         <p class="subtitle">Gere QR codes gratuitamente para qualquer URL</p>
@@ -207,7 +274,7 @@
             </div>
             <div class="input-group" id="frameTextSizeGroup" style="display:none;">
                 <label for="frameTextSize">Tamanho do texto da moldura (px):</label>
-                <input type="number" id="frameTextSize" name="frameTextSize" min="10" max="100" value="32">
+                <input type="number" id="frameTextSize" name="frameTextSize" min="10" max="54" value="32">
             </div>
             <div class="input-group">
                 <label for="fileName">Nome do arquivo:</label>
@@ -359,6 +426,32 @@
 
         // Auto-focus no input
         urlInput.focus();
+
+        // Theme toggle logic
+        const themeToggle = document.getElementById('themeToggle');
+        function setTheme(mode) {
+            if (mode === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+                themeToggle.textContent = '☀️';
+            } else {
+                document.documentElement.classList.remove('dark-mode');
+                themeToggle.textContent = '🌙';
+            }
+            localStorage.setItem('theme', mode);
+        }
+        // Detect saved or system theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+        themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark-mode');
+            setTheme(isDark ? 'light' : 'dark');
+        });
     </script>
 </body>
 </html>
