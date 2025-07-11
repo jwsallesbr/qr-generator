@@ -4,13 +4,12 @@ Uma aplicação web e API REST para gerar QR codes customizáveis a partir de UR
 
 ## Funcionalidades
 
-- ✅ **Geração de QR Codes customizáveis** (moldura, texto, cantos arredondados)
+- ✅ **Geração de QR Codes customizáveis** (moldura, texto, cantos arredondados, tamanho do texto)
 - ✅ **Download em PNG de alta qualidade**
-- ✅ **Interface web responsiva**
+- ✅ **Interface web responsiva com modo claro/escuro**
 - ✅ **API REST para integração**
 - ✅ **Gerenciamento de usuários (CRUD via API)**
 - ✅ **Banco de dados SQLite integrado**
-- ✅ **Código aberto e gratuito**
 
 ## Como usar
 
@@ -18,7 +17,7 @@ Uma aplicação web e API REST para gerar QR codes customizáveis a partir de UR
 
 1. Acesse a aplicação no navegador (`http://localhost:5000`)
 2. Digite a URL desejada
-3. Escolha opções de moldura, texto e arredondamento
+3. Escolha opções de moldura, texto, arredondamento e tema (claro/escuro)
 4. Clique em "Gerar QR Code"
 5. Visualize e baixe o QR code gerado
 
@@ -35,7 +34,7 @@ Uma aplicação web e API REST para gerar QR codes customizáveis a partir de UR
   "frame_text": "Texto opcional",
   "round_inner": "yes", // ou "no"
   "round_outer": "yes", // ou "no"
-  "frame_text_size": 32
+  "frame_text_size": 32 // valor entre 10 e 54
 }
 ```
 **Response:**
@@ -61,6 +60,12 @@ Uma aplicação web e API REST para gerar QR codes customizáveis a partir de UR
 - `GET /api/users/<id>` — Detalha usuário
 - `PUT /api/users/<id>` — Atualiza usuário
 - `DELETE /api/users/<id>` — Remove usuário
+
+## Observações e Melhorias Recentes
+
+- Agora é possível alternar entre modo claro e escuro na interface web.
+- O tamanho do texto da moldura é limitado a 54px para melhor visualização.
+- O QR code foi ajustado para preencher melhor o espaço disponível na imagem.
 
 ## Instalação e Execução
 
@@ -113,10 +118,6 @@ qr-generator/
 - **QR Code:** qrcode (Python)
 - **Imagens:** Pillow (PIL)
 - **Banco:** SQLite
-
-## Licença
-
-Este projeto é de código aberto e gratuito para uso pessoal e comercial.
 
 ## Suporte
 
